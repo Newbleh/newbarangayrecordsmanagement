@@ -1,0 +1,12 @@
+{
+  "name": "brm",
+  "description": "Barangay Records Management System",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "php -S 0.0.0.0:${PORT:-8000}"
+  },
+  "engines": {
+    "php": "8.0.0",
+    "node": "16.x"
+  }
+}

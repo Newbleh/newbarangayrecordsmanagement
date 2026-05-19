@@ -1,0 +1,35 @@
+[
+  {
+    "name": "BRM API",
+    "description": "Barangay Records Management API",
+    "repository": "https://github.com/user/brm",
+    "keywords": ["php", "mysql", "barangay"],
+    "buildpacks": [
+      {
+        "url": "heroku/php"
+      }
+    ],
+    "addons": [
+      {
+        "plan": "cleardb:ignite"
+      }
+    ],
+    "env": {
+      "DB_HOST": {
+        "description": "MySQL Host",
+        "value": "localhost"
+      },
+      "DB_USER": {
+        "description": "MySQL User",
+        "value": "root"
+      },
+      "DB_PASS": {
+        "description": "MySQL Password"
+      },
+      "DB_NAME": {
+        "description": "Database Name",
+        "value": "barangay_records"
+      }
+    }
+  }
+]

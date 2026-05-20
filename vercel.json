@@ -1,19 +1,11 @@
 {
   "version": 2,
   "builds": [
-    { "src": "index.php", "use": "@beyondcode/vercel-php@^0.5.8" },
-    { "src": "pages/**.php", "use": "@beyondcode/vercel-php@^0.5.8" },
-    { "src": "api/**.php", "use": "@beyondcode/vercel-php@^0.5.8" },
-    { "src": "includes/**.php", "use": "@beyondcode/vercel-php@^0.5.8" },
-    { "src": "scripts/**.php", "use": "@beyondcode/vercel-php@^0.5.8" },
-    { "src": "assets/**", "use": "@vercel/static" }
+    { "src": "Dockerfile", "use": "@vercel/docker" }
   ],
   "routes": [
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
     { "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico))$", "dest": "/$1" },
-    { "src": "/pages/(.*)", "dest": "/pages/$1" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*\\.php)$", "dest": "/$1" },
-    { "src": "/(.*)", "dest": "/index.php" }
+    { "src": "^(?:.*)$", "dest": "/index.php" }
   ]
 }

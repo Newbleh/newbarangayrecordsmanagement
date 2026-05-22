@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "Dockerfile", "use": "@vercel/docker" }
-  ],
   "routes": [
-    { "src": "/assets/(.*)", "dest": "/assets/$1" },
-    { "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico))$", "dest": "/$1" },
-    { "src": "^(?:.*)$", "dest": "/index.php" }
+    {"src": "/assets/(.*)", "dest": "/assets/$1"},
+    {"src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico))$", "dest": "/$1"},
+    {"src": "^(?:.*)$", "dest": "/index.php"}
   ]
 }

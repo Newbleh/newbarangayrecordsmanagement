@@ -94,6 +94,62 @@ class PDOResultWrapper {
     }
 }
 
+/**
+ * Wrapper class for PDO prepared statements to mimic mysqli API
+ */
+class PDOStatementWrapper {
+    private $stmt;
+    private $params = [];
+    private $types = '';
+    
+    public function __construct($stmt) {
+        $this->stmt = $stmt;
+    }
+    
+    /**
+     * Mimic mysqli's bind_param method
+     */
+    public function bind_param($types, ...$params) {
+        $this->types = $types;
+        $this->params = $params;
+    }
+    
+    /**
+     * Execute the statement
+     */
+    public function execute() {
+        if (!$this->stmt) {
+            return false;
+        }
+        try {
+            return $this->stmt->execute($this->params);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Get the result (for PDO compatibility)
+     */
+    public function get_result() {
+        return new PDOResultWrapper($this->stmt);
+    }
+    
+    /**
+     * Fetch a single row as associative array
+     */
+    public function fetch_assoc() {
+        return $this->stmt ? $this->stmt->fetch(PDO::FETCH_ASSOC) : null;
+    }
+    
+    /**
+     * Close the statement (no-op for PDO)
+     */
+    public function close() {
+        // PDO statements auto-close, nothing to do
+    }
+}
+
 // Helper function to run queries that work with both mysqli and PDO
 function query_helper($conn, $sql) {
     if ($conn instanceof PDO) {
@@ -102,6 +158,36 @@ function query_helper($conn, $sql) {
     } else {
         $result = $conn->query($sql);
         return new MysqliResultWrapper($result);
+    }
+}
+
+// Override PDO's prepare method to return wrapper
+// Note: This requires using $conn->prepare() in code
+// For PDO, we'll wrap the prepare call in functions that need it
+
+/**
+ * Helper function to prepare and execute statements for both mysqli and PDO
+ * Usage: $result = prepare_and_execute($conn, $sql, $types, $param1, $param2, ...);
+ */
+function prepare_and_execute($conn, $sql, $types = '', ...$params) {
+    if ($conn instanceof PDO) {
+        // PDO path
+        $stmt = $conn->prepare($sql);
+        $stmt->execute($params);
+        return new PDOResultWrapper($stmt);
+    } else {
+        // mysqli path
+        $stmt = $conn->prepare($sql);
+        if ($stmt) {
+            if ($types) {
+                $stmt->bind_param($types, ...$params);
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            return new MysqliResultWrapper($result);
+        }
+        return null;
     }
 }
 ?>

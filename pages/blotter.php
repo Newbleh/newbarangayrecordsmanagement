@@ -6,10 +6,7 @@ require_login();
 
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $id = $_GET['delete'];
-    $stmt = $conn->prepare("DELETE FROM blotter WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $stmt->close();
+    prepare_and_execute($conn, "DELETE FROM blotter WHERE id = ?", "i", $id);
     header('Location: blotter.php');
     exit();
 }

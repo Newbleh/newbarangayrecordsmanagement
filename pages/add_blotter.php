@@ -19,14 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($incident_date) || empty($description)) {
         $errors[] = 'Please fill in the required fields.';
     } else {
-        $stmt = $conn->prepare("INSERT INTO blotter (incident_date, description, complainant, respondent, location, status, resolution) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssss", $incident_date, $description, $complainant, $respondent, $location, $status, $resolution);
-        if ($stmt->execute()) {
+        $result = prepare_and_execute($conn, "INSERT INTO blotter (incident_date, description, complainant, respondent, location, status, resolution) VALUES (?, ?, ?, ?, ?, ?, ?)", "sssssss", $incident_date, $description, $complainant, $respondent, $location, $status, $resolution);
+        if ($result) {
             $success = 'Blotter record saved successfully.';
         } else {
             $errors[] = 'Unable to save blotter record.';
         }
-        $stmt->close();
     }
 }
 ?>

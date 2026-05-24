@@ -20,24 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors[] = 'Password must be at least 6 characters.';
     } else {
         // Check if username exists
-        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $result = prepare_and_execute($conn, "SELECT id FROM users WHERE username = ?", "s", $username);
+        $row = $result->fetch_assoc();
 
-        if ($result->num_rows > 0) {
+        if ($row) {
             $errors[] = 'Username already exists.';
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $username, $hashed_password, $role);
-            if ($stmt->execute()) {
+            $result = prepare_and_execute($conn, "INSERT INTO users (username, password, role) VALUES (?, ?, ?)", "sss", $username, $hashed_password, $role);
+            if ($result) {
                 $success = 'User registered successfully. <a href="login.php">Login here</a>';
             } else {
                 $errors[] = 'Registration failed.';
             }
         }
-        $stmt->close();
     }
 }
 ?>

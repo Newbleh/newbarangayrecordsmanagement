@@ -22,14 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($first_name) || empty($last_name) || empty($address) || empty($birthdate)) {
         $errors[] = 'Please fill in required fields.';
     } else {
-        $stmt = $conn->prepare("INSERT INTO residents (first_name, last_name, middle_name, address, birthdate, contact_number, email, gender, civil_status, occupation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssssss", $first_name, $last_name, $middle_name, $address, $birthdate, $contact_number, $email, $gender, $civil_status, $occupation);
-        if ($stmt->execute()) {
+        $result = prepare_and_execute($conn, "INSERT INTO residents (first_name, last_name, middle_name, address, birthdate, contact_number, email, gender, civil_status, occupation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", "ssssssssss", $first_name, $last_name, $middle_name, $address, $birthdate, $contact_number, $email, $gender, $civil_status, $occupation);
+        if ($result) {
             $success = 'Resident added successfully.';
         } else {
             $errors[] = 'Failed to add resident.';
         }
-        $stmt->close();
     }
 }
 ?>

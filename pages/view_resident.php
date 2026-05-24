@@ -10,12 +10,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 
 $id = $_GET['id'];
-$stmt = $conn->prepare("SELECT * FROM residents WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
+$result = prepare_and_execute($conn, "SELECT * FROM residents WHERE id = ?", "i", $id);
 $resident = $result->fetch_assoc();
-$stmt->close();
 
 if (!$resident) {
     header('Location: residents.php');

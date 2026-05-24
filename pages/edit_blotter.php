@@ -13,12 +13,8 @@ $id = $_GET['id'];
 $errors = [];
 $success = '';
 
-$stmt = $conn->prepare("SELECT * FROM blotter WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
+$result = prepare_and_execute($conn, "SELECT * FROM blotter WHERE id = ?", "i", $id);
 $record = $result->fetch_assoc();
-$stmt->close();
 
 if (!$record) {
     header('Location: blotter.php');
@@ -37,9 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($incident_date) || empty($description)) {
         $errors[] = 'Please fill in the required fields.';
     } else {
-        $stmt = $conn->prepare("UPDATE blotter SET incident_date = ?, description = ?, complainant = ?, respondent = ?, location = ?, status = ?, resolution = ? WHERE id = ?");
-        $stmt->bind_param("sssssssi", $incident_date, $description, $complainant, $respondent, $location, $status, $resolution, $id);
-        if ($stmt->execute()) {
+        $result = prepare_and_execute($conn, "UPDATE blotter SET incident_date = ?, description = ?, complainant = ?, respondent = ?, location = ?, status = ?, resolution = ? WHERE id = ?", "sssssssi", $incident_date, $description, $complainant, $respondent, $location, $status, $resolution, $id);
+        if ($result) {
             $success = 'Blotter record updated successfully.';
             $record = array_merge($record, [
                 'incident_date' => $incident_date,

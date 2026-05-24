@@ -21,14 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($resident_id) || empty($document_type) || empty($issued_date)) {
         $errors[] = 'Please fill in required fields.';
     } else {
-        $stmt = $conn->prepare("INSERT INTO documents (resident_id, document_type, issued_date, expiry_date, status, notes) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("isssss", $resident_id, $document_type, $issued_date, $expiry_date, $status, $notes);
-        if ($stmt->execute()) {
+        $result = prepare_and_execute($conn, "INSERT INTO documents (resident_id, document_type, issued_date, expiry_date, status, notes) VALUES (?, ?, ?, ?, ?, ?)", "isssss", $resident_id, $document_type, $issued_date, $expiry_date, $status, $notes);
+        if ($result) {
             $success = 'Document added successfully.';
         } else {
             $errors[] = 'Failed to add document.';
         }
-        $stmt->close();
     }
 }
 ?>

@@ -13,12 +13,8 @@ $id = $_GET['id'];
 $errors = [];
 $success = '';
 
-$stmt = $conn->prepare("SELECT * FROM documents WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
+$result = prepare_and_execute($conn, "SELECT * FROM documents WHERE id = ?", "i", $id);
 $document = $result->fetch_assoc();
-$stmt->close();
 
 if (!$document) {
     header('Location: documents.php');
@@ -38,9 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($resident_id) || empty($document_type) || empty($issued_date)) {
         $errors[] = 'Please fill in required fields.';
     } else {
-        $stmt = $conn->prepare("UPDATE documents SET resident_id = ?, document_type = ?, issued_date = ?, expiry_date = ?, status = ?, notes = ? WHERE id = ?");
-        $stmt->bind_param("isssssi", $resident_id, $document_type, $issued_date, $expiry_date, $status, $notes, $id);
-        if ($stmt->execute()) {
+        $result = prepare_and_execute($conn, "UPDATE documents SET resident_id = ?, document_type = ?, issued_date = ?, expiry_date = ?, status = ?, notes = ? WHERE id = ?", "isssssi", $resident_id, $document_type, $issued_date, $expiry_date, $status, $notes, $id);
+        if ($result) {
             $success = 'Document updated successfully.';
             $document = array_merge($document, [
                 'resident_id' => $resident_id,
@@ -53,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $errors[] = 'Unable to update document.';
         }
-        $stmt->close();
     }
 }
 ?>

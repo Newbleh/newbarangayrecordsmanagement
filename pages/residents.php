@@ -7,10 +7,7 @@ require_login();
 // Handle delete
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $id = $_GET['delete'];
-    $stmt = $conn->prepare("DELETE FROM residents WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $stmt->close();
+    prepare_and_execute($conn, "DELETE FROM residents WHERE id = ?", "i", $id);
     header('Location: residents.php');
     exit();
 }

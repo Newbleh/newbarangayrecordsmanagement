@@ -13,12 +13,8 @@ $id = $_GET['id'];
 $errors = [];
 $success = '';
 
-$stmt = $conn->prepare("SELECT * FROM residents WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
+$result = prepare_and_execute($conn, "SELECT * FROM residents WHERE id = ?", "i", $id);
 $resident = $result->fetch_assoc();
-$stmt->close();
 
 if (!$resident) {
     header('Location: residents.php');
@@ -40,9 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($first_name) || empty($last_name) || empty($address) || empty($birthdate)) {
         $errors[] = 'Required fields cannot be empty.';
     } else {
-        $stmt = $conn->prepare("UPDATE residents SET first_name = ?, last_name = ?, middle_name = ?, address = ?, birthdate = ?, contact_number = ?, email = ?, gender = ?, civil_status = ?, occupation = ? WHERE id = ?");
-        $stmt->bind_param("ssssssssssi", $first_name, $last_name, $middle_name, $address, $birthdate, $contact_number, $email, $gender, $civil_status, $occupation, $id);
-        if ($stmt->execute()) {
+        $result = prepare_and_execute($conn, "UPDATE residents SET first_name = ?, last_name = ?, middle_name = ?, address = ?, birthdate = ?, contact_number = ?, email = ?, gender = ?, civil_status = ?, occupation = ? WHERE id = ?", "ssssssssssi", $first_name, $last_name, $middle_name, $address, $birthdate, $contact_number, $email, $gender, $civil_status, $occupation, $id);
+        if ($result) {
             $success = 'Resident profile updated successfully.';
             $resident = array_merge($resident, [
                 'first_name' => $first_name,

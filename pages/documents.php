@@ -5,7 +5,7 @@ require_once '../includes/functions.php';
 require_login();
 
 // Get documents with resident names
-$result = $conn->query("SELECT d.*, CONCAT(r.last_name, ', ', r.first_name) as resident_name FROM documents d JOIN residents r ON d.resident_id = r.id ORDER BY d.issued_date DESC");
+$result = query_helper($conn, "SELECT d.*, CONCAT(r.last_name, ', ', r.first_name) as resident_name FROM documents d JOIN residents r ON d.resident_id = r.id ORDER BY d.issued_date DESC");
 ?>
 
 <!DOCTYPE html>

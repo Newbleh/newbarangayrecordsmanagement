@@ -4,11 +4,11 @@ require_once '../includes/config.php';
 require_once '../includes/functions.php';
 require_login();
 
-$total_residents = $conn->query("SELECT COUNT(*) as count FROM residents")->fetch_assoc()['count'];
-$total_documents = $conn->query("SELECT COUNT(*) as count FROM documents")->fetch_assoc()['count'];
-$total_blotter = $conn->query("SELECT COUNT(*) as count FROM blotter")->fetch_assoc()['count'];
-$resolved_blotter = $conn->query("SELECT COUNT(*) as count FROM blotter WHERE status = 'Resolved'")->fetch_assoc()['count'];
-$active_documents = $conn->query("SELECT COUNT(*) as count FROM documents WHERE status = 'Active'")->fetch_assoc()['count'];
+$total_residents = query_helper($conn, "SELECT COUNT(*) as count FROM residents")->fetch_assoc()['count'];
+$total_documents = query_helper($conn, "SELECT COUNT(*) as count FROM documents")->fetch_assoc()['count'];
+$total_blotter = query_helper($conn, "SELECT COUNT(*) as count FROM blotter")->fetch_assoc()['count'];
+$resolved_blotter = query_helper($conn, "SELECT COUNT(*) as count FROM blotter WHERE status = 'Resolved'")->fetch_assoc()['count'];
+$active_documents = query_helper($conn, "SELECT COUNT(*) as count FROM documents WHERE status = 'Active'")->fetch_assoc()['count'];
 ?>
 
 <!DOCTYPE html>

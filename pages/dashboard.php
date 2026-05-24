@@ -5,10 +5,17 @@ require_once '../includes/functions.php';
 require_login();
 
 // Get stats
-$total_residents = $conn->query("SELECT COUNT(*) as count FROM residents")->fetch_assoc()['count'];
-$total_documents = $conn->query("SELECT COUNT(*) as count FROM documents")->fetch_assoc()['count'];
-$total_blotter = $conn->query("SELECT COUNT(*) as count FROM blotter")->fetch_assoc()['count'];
-$pending_blotter = $conn->query("SELECT COUNT(*) as count FROM blotter WHERE status = 'Pending'")->fetch_assoc()['count'];
+$result = query_helper($conn, "SELECT COUNT(*) as count FROM residents");
+$total_residents = $result->fetch_assoc()['count'];
+
+$result = query_helper($conn, "SELECT COUNT(*) as count FROM documents");
+$total_documents = $result->fetch_assoc()['count'];
+
+$result = query_helper($conn, "SELECT COUNT(*) as count FROM blotter");
+$total_blotter = $result->fetch_assoc()['count'];
+
+$result = query_helper($conn, "SELECT COUNT(*) as count FROM blotter WHERE status = 'Pending'");
+$pending_blotter = $result->fetch_assoc()['count'];
 ?>
 
 <!DOCTYPE html>

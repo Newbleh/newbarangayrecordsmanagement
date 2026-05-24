@@ -8,7 +8,7 @@ $errors = [];
 $success = '';
 
 // Get residents for dropdown
-$residents_result = $conn->query("SELECT id, CONCAT(last_name, ', ', first_name) as name FROM residents ORDER BY last_name, first_name");
+$residents_result = query_helper($conn, "SELECT id, CONCAT(last_name, ', ', first_name) as name FROM residents ORDER BY last_name, first_name");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $resident_id = $_POST['resident_id'];

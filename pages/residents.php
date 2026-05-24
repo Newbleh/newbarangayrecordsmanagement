@@ -16,7 +16,7 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
 }
 
 // Get residents
-$result = $conn->query("SELECT * FROM residents ORDER BY last_name, first_name");
+$result = query_helper($conn, "SELECT * FROM residents ORDER BY last_name, first_name");
 ?>
 
 <!DOCTYPE html>

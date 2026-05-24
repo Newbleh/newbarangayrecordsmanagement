@@ -41,4 +41,67 @@ if ($dbType === 'postgresql') {
     
     $conn->set_charset("utf8");
 }
+
+/**
+ * Helper function to create a wrapper for database results
+ * Makes PDO and mysqli results compatible
+ */
+function wrap_result($result, $is_pdo = false) {
+    if ($is_pdo) {
+        return new PDOResultWrapper($result);
+    }
+    return new MysqliResultWrapper($result);
+}
+
+/**
+ * Wrapper class for mysqli results
+ */
+class MysqliResultWrapper {
+    private $result;
+    
+    public function __construct($result) {
+        $this->result = $result;
+    }
+    
+    public function fetch_assoc() {
+        return $this->result ? $this->result->fetch_assoc() : null;
+    }
+    
+    public function num_rows() {
+        return $this->result ? $this->result->num_rows : 0;
+    }
+}
+
+/**
+ * Wrapper class for PDO results
+ */
+class PDOResultWrapper {
+    private $stmt;
+    
+    public function __construct($stmt) {
+        $this->stmt = $stmt;
+    }
+    
+    public function fetch_assoc() {
+        return $this->stmt ? $this->stmt->fetch(PDO::FETCH_ASSOC) : null;
+    }
+    
+    public function num_rows() {
+        if ($this->stmt) {
+            return $this->stmt->rowCount();
+        }
+        return 0;
+    }
+}
+
+// Helper function to run queries that work with both mysqli and PDO
+function query_helper($conn, $sql) {
+    if ($conn instanceof PDO) {
+        $stmt = $conn->query($sql);
+        return new PDOResultWrapper($stmt);
+    } else {
+        $result = $conn->query($sql);
+        return new MysqliResultWrapper($result);
+    }
+}
 ?>

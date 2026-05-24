@@ -14,7 +14,7 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     exit();
 }
 
-$result = $conn->query("SELECT * FROM blotter ORDER BY incident_date DESC");
+$result = query_helper($conn, "SELECT * FROM blotter ORDER BY incident_date DESC");
 ?>
 
 <!DOCTYPE html>

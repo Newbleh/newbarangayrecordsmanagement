@@ -1,22 +1,44 @@
 <?php
-// Database configuration
+// Database configuration - supports both MySQL and PostgreSQL
 $dbHost = getenv('DB_HOST') ?: '127.0.0.1';
+$dbPort = getenv('DB_PORT') ?: '3306';
 $dbUser = getenv('DB_USER') ?: 'root';
 $dbPass = getenv('DB_PASS') ?: '';
 $dbName = getenv('DB_NAME') ?: 'barangay_records';
+$dbType = getenv('DB_TYPE') ?: 'mysql';
 
 if ($dbHost === 'localhost') {
     $dbHost = '127.0.0.1';
 }
 
-// Create connection
-$conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Detect database type from port or explicit setting
+if ($dbPort == '5432' || strpos($dbHost, 'postgres') !== false || strpos($dbHost, 'render') !== false) {
+    $dbType = 'postgresql';
 }
 
-// Set charset
-$conn->set_charset("utf8");
+// Create connection based on database type
+if ($dbType === 'postgresql') {
+    try {
+        $conn = new PDO(
+            "pgsql:host=$dbHost;port=$dbPort;dbname=$dbName",
+            $dbUser,
+            $dbPass,
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]
+        );
+    } catch (PDOException $e) {
+        die("Connection failed: " . $e->getMessage());
+    }
+} else {
+    // MySQL connection using mysqli
+    $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName, $dbPort);
+    
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    
+    $conn->set_charset("utf8");
+}
 ?>

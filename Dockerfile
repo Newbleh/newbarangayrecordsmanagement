@@ -1,7 +1,9 @@
 FROM php:8.0-apache
 
 # Install mysqli and other extensions
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN apt-get update && apt-get install -y libpq-dev && \
+	docker-php-ext-install mysqli pdo pdo_mysql pgsql pdo_pgsql && \
+	rm -rf /var/lib/apt/lists/*
 
 # Enable Apache modules
 RUN a2enmod rewrite

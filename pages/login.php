@@ -17,26 +17,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($username) || empty($password)) {
         $errors[] = 'Please fill in all fields.';
     } else {
-        $stmt = $conn->prepare("SELECT id, password, role FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        // Support both mysqli and PDO connections
+        if ($conn instanceof mysqli) {
+            $stmt = $conn->prepare("SELECT id, password, role FROM users WHERE username = ?");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        if ($result->num_rows == 1) {
-            $user = $result->fetch_assoc();
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $username;
-                $_SESSION['role'] = $user['role'];
-                header('Location: dashboard.php');
-                exit();
+            if ($result && $result->num_rows == 1) {
+                $user = $result->fetch_assoc();
+                if (password_verify($password, $user['password'])) {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $username;
+                    $_SESSION['role'] = $user['role'];
+                    header('Location: dashboard.php');
+                    exit();
+                } else {
+                    $errors[] = 'Invalid username or password.';
+                }
             } else {
                 $errors[] = 'Invalid username or password.';
             }
+
+            if ($stmt) { $stmt->close(); }
         } else {
-            $errors[] = 'Invalid username or password.';
+            // PDO (PostgreSQL)
+            $stmt = $conn->prepare("SELECT id, password, role FROM users WHERE username = :username");
+            $stmt->execute([':username' => $username]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user) {
+                if (password_verify($password, $user['password'])) {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $username;
+                    $_SESSION['role'] = $user['role'];
+                    header('Location: dashboard.php');
+                    exit();
+                } else {
+                    $errors[] = 'Invalid username or password.';
+                }
+            } else {
+                $errors[] = 'Invalid username or password.';
+            }
         }
-        $stmt->close();
     }
 }
 ?>
